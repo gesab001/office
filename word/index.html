@@ -1,23 +1,44 @@
 <html>
-  <head>
-    <title>Print TextArea</title>
-    <script type="text/javascript">
-      function printTextArea() {
+     <head>
+     <title>file</title>
+     </head>
+     <style>
+         textarea { font-size: 18px; }
+     </style>
+     <script 
+     src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js">
+     </script>
+     <body id="target">
+ <input type="button" onclick="printTextArea()" value="Print"/>
+     <button  id="cmd">save as PDF</button>
+
+     <div>
+     <textarea id="content" rows="4" cols="70"></textarea>
+     </div>
+     <div id="editor"></div>
+
+       </body>
+      <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js">
+      </script>
+      <script>
+      var doc= new jsPDF();
+        $('#cmd').click(function () {
+          doc.text($('#content').val(), 10, 10);
+          doc.save('Reason.pdf'); 
+        });
+
+  function printTextArea() {
         childWindow = window.open('','childWindow','location=yes, menubar=yes, toolbar=yes');
         childWindow.document.open();
         childWindow.document.write('<html><head></head><body>');
-        childWindow.document.write(document.getElementById('targetTextArea').value.replace(/\n/gi,'<br>'));
+        childWindow.document.write(document.getElementById('content').value.replace(/\n/gi,'<br>'));
         childWindow.document.write('</body></html>');
         childWindow.print();
         childWindow.document.close();
         childWindow.close();
       }
-    </script>
-  </head>
-  <body>
-    <textarea rows="20" cols="50" id="targetTextArea">
-      TextArea value...
-    </textarea><br>
-    <input type="button" onclick="printTextArea()" value="Print"/>
-  </body>
-</html>
+       </script>
+
+       </html>
+

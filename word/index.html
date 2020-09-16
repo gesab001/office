@@ -1,78 +1,22 @@
-<html>
+	<html>
      <head>
-     <title>file</title>
+     <title>Word</title>
+	 <link rel="stylesheet" href="index.css" type="text/css" />
      </head>
-     <style>
 	 
-	 @font-face {
-  font-family: Trace;
-  src: url(Trace-lxy0.ttf);
-}
-         textarea { font-size: 18px; }
-		 body {
-  background: rgb(204,204,204); 
-}
-page {
-  background: white;
-  display: block;
-  margin: 0 auto;
-  margin-bottom: 0.5cm;
-  box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
-}
-page[size="A4"] {  
-  width: 21cm;
-  height: 29.7cm; 
-  padding: 1cm;
-}
-textarea {
-     font-family: Trace;
-	 font-size: 12px;
-     resize: none;
-     width: 100%;
-	 height: 100%;
-     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-     box-sizing: border-box;         /* Opera/IE 8+ */
-}
-page[size="A4"][layout="landscape"] {
-  width: 29.7cm;
-  height: 21cm;  
-}
-page[size="A3"] {
-  width: 29.7cm;
-  height: 42cm;
-}
-page[size="A3"][layout="landscape"] {
-  width: 42cm;
-  height: 29.7cm;  
-}
-page[size="A5"] {
-  width: 14.8cm;
-  height: 21cm;
-}
-page[size="A5"][layout="landscape"] {
-  width: 21cm;
-  height: 14.8cm;  
-}
-@media print {
-  body, page {
-    margin: 0;
-    box-shadow: 0;
-  }
-}
-     </style>
      <script 
      src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js">
      </script>
      <body id="target">
+	  <div id="demo"></div>
 	 <select><option>File</option>></select>
 	  <input type="button" onclick="printTextArea()" value="Print"/>
      <button  id="cmd">save as PDF</button>
-	 <select><option value="trace">Trace</option></select>
-	 <input type="number" value="12"/>
+	 <select onchange="changeFont()" id="fontselect"></select>
+	 <input type="number" value="12" id="fontsize"/>
 	 <page size="A4">     <textarea id="content"></textarea>
 </page>
-<!--<page size="A4"></page>
+<page size="A4"></page>
 <page size="A4" layout="landscape"></page>
 <page size="A5"></page>
 <page size="A5" layout="landscape"></page>
@@ -89,23 +33,109 @@ page[size="A5"][layout="landscape"] {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js">
       </script>
       <script>
+	  
+	  document.getElementById("fontsize").addEventListener("change", changeFontSize);
+
+
+function changeFontSize() {
+  var x = document.getElementById("fontsize");
+  var textarea = document.getElementById("content");
+  textarea.style.fontSize = x.value + "px";
+}
+	  var fontlist;
+	  var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       loadFontList(JSON.parse(xhttp.responseText));
+    }
+};
+xhttp.open("GET", "fonts.json", true);
+xhttp.send();
+
+
       var doc= new jsPDF();
         $('#cmd').click(function () {
           doc.text($('#content').val(), 10, 10);
           doc.save('Reason.pdf'); 
         });
 
-  function printTextArea() {
+function loadFontList(jsondata){
+   fontlist = jsondata["items"];
+   for (var x=0; x<fontlist.length; x++){
+	   var select = document.getElementById("fontselect");
+	   var option = document.createElement("option");
+	   option.text = fontlist[x]["fontFamily"];
+	   option.value = fontlist[x]["fontFamily"];
+	   select.add(option); 
+   }
+   for (var i =0; i<fontlist.length; i++){
+      var fontitem = fontlist[i];
+      loadFontFaces(fontitem);
+   }
+
+ 
+}
+
+async function loadFontFaces(fontitem) {
+  <!-- for (var x=0; x<fontlist.length;x++){ -->
+	   <!-- var fontitem = fontlist[x]; -->
+	   var fontFamily = fontitem["fontFamily"];
+	   var filename = fontitem["filename"];
+	   var url = "url(./fonts/"+filename+")";
+
+	   <!-- var junction_font = new FontFace(fontFamily, url); -->
+	   <!-- junction_font.load().then(function(loaded_face) { -->
+		<!-- document.fonts.add(loaded_face); -->
+		
+	   <!-- }).catch(function(error) { -->
+	      <!-- document.getElementById("demo").innerHTML = error.toString(); -->
+	   <!-- });  -->
+	   const font = new FontFace(fontFamily, url);
+       <!-- // wait for font to be loaded -->
+       <!-- await font.load(); -->
+    <!-- // add font to document -->
+       <!-- document.fonts.add(font); -->
+    <!-- // enable font with CSS class -->
+       <!-- document.body.classList.add('fonts-loaded'); -->
+  <!-- } -->
+ 
+    // wait for font to be loaded
+    await font.load();
+    // add font to document
+    document.fonts.add(font);
+    // enable font with CSS class
+    document.body.classList.add('fonts-loaded');
+
+}
+
+function changeFont(){
+ var fontFamily = document.getElementById("fontselect").value;
+
+ <!-- var filename = document.getElementById("fontselect").value; -->
+ var textarea = document.getElementById("content");
+ textarea.style.fontFamily = fontFamily;
+}
+
+function printTextArea() {
+       var fontFamily = document.getElementById("fontselect").value;
+	   var url = "url(./fonts/"+fontFamily+".ttf)";
+
+	   alert(url);
+       var fontSize = document.getElementById("fontsize").value;
+
         childWindow = window.open('','childWindow','location=yes, menubar=yes, toolbar=yes');
         childWindow.document.open();
-        childWindow.document.write('<html><head></head><body>');
+        childWindow.document.write('<html><head><style>@font-face{font-family:'+fontFamily+';src: '+url+'} body{font-size:'+fontSize+'px; font-family:'+fontFamily+'; width: 21cm; height: 29.7cm; padding: 1cm;}</style></head><body>');
+		<!-- childWindow.document.write('<page size="A4">     <textarea id="content">'); -->
         childWindow.document.write(document.getElementById('content').value.replace(/\n/gi,'<br>'));
+		<!-- childWindow.document.write('</textarea></page>'); -->
         childWindow.document.write('</body></html>');
         childWindow.print();
         childWindow.document.close();
-        childWindow.close();
+        childWindow.close(); 
       }
-       </script>
+</script>
 
-       </html>
+</html>
 

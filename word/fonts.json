@@ -1,0 +1,24 @@
+{
+    "items": [
+        {
+            "fontFamily": "DrBy2-2vae",
+            "filename": "DrBy2-2vae.ttf"
+        },
+        {
+            "fontFamily": "DrHh2-KVml",
+            "filename": "DrHh2-KVml.ttf"
+        },
+        {
+            "fontFamily": "Trace-lxy0",
+            "filename": "Trace-lxy0.ttf"
+        },
+        {
+            "fontFamily": "EcolierCourt-0vZo",
+            "filename": "EcolierCourt-0vZo.ttf"
+        },
+        {
+            "fontFamily": "EcolierLignesCourt-4nD6",
+            "filename": "EcolierLignesCourt-4nD6.ttf"
+        }
+    ]
+}

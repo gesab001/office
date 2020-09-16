@@ -9,4 +9,5 @@ inotifywait -m -e create -e moved_to --format "%f" $TARGET \
                 do
                         echo Detected $FILENAME, adding new font
                         python3 addfonts.py
+                        ../deploy.sh
                 done
